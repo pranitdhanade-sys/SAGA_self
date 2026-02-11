@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from emotion_pipeline import preprocess, encode, EmotionModel, vocab, DEVICE
 from comext import get_comments
+import os
 
 # -----------------------------
 # Universal Model Loader
 # -----------------------------
 def load_model_safely(model, path):
-    import os
     ext = os.path.splitext(path)[1].lower()
     label_encoder = None
 
@@ -40,10 +40,30 @@ def load_model_safely(model, path):
         raise ValueError(f"Unsupported model format: {ext}")
 
 # -----------------------------
+# Robust loader with fallback
+# -----------------------------
+def load_model_with_fallback(model, paths):
+    last_exception = None
+    for path in paths:
+        if not os.path.exists(path):
+            print(f"[INFO] Model file not found: {path}")
+            continue
+        try:
+            print(f"[INFO] Trying to load model from {path}")
+            model, label_encoder = load_model_safely(model, path)
+            print(f"[INFO] Successfully loaded model from {path}")
+            return model, label_encoder
+        except Exception as e:
+            print(f"[WARNING] Failed to load {path}: {e}")
+            last_exception = e
+    raise RuntimeError(f"All model loading attempts failed. Last error: {last_exception}")
+
+# -----------------------------
 # Load model
 # -----------------------------
 model = EmotionModel(len(vocab)).to(DEVICE)
-model, label_encoder = load_model_safely(model, "emotion_model.pth")
+model_files = ["emotion_model.pth", "emotion_model.pt", "emotion_model.npy"]
+model, label_encoder = load_model_with_fallback(model, model_files)
 model.eval()
 
 # -----------------------------
@@ -137,4 +157,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = SAGAApp(root)
     root.mainloop()
-

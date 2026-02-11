@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Sentiment Analyzer</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            width: 500px;
+            margin: auto;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #00c6ff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #0072ff;
+        }
+
+        img {
+            margin-top: 20px;
+            max-width: 100%;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>YouTube Sentiment Analyzer</h2>
+    <input type="text" id="youtubeUrl" placeholder="Paste YouTube Link Here">
+    <br>
+    <button onclick="analyze()">Analyze</button>
+
+    <div class="results" id="results"></div>
+    <img id="graph" />
+</div>
+
+<script>
+function analyze() {
+    const url = document.getElementById("youtubeUrl").value;
+
+    fetch("/analyze", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "url=" + encodeURIComponent(url)
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("results").innerHTML =
+            "Positive: " + data.positive +
+            "<br>Negative: " + data.negative +
+            "<br>Neutral: " + data.neutral;
+
+        document.getElementById("graph").src =
+            "data:image/png;base64," + data.graph;
+    });
+}
+</script>
+
+</body>
+</html>
+

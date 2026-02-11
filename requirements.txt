@@ -1,0 +1,15 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+pandas
+matplotlib==3.7.3
+numpy==1.24.4
+scipy==1.10.1
+nltk==3.8.1
+scikit-learn
+deap
+tqdm
+torch
+torchvision
+torchaudio
+google-api-python-client
+flask

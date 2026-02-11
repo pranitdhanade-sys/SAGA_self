@@ -13,3 +13,4 @@ torchvision
 torchaudio
 google-api-python-client
 flask
+tkinter
